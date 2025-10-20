@@ -16,7 +16,7 @@ The goal of the plugin is to simplify the integration of any WordPress-powered w
 
 The plugin is developed and maintained by [Teplitsa of social technologies](http://te-st.ru/).
 
-
+fwefwefe
 **Features**
 
 * Compatibility with Yandex.News [guidelines](http://help.yandex.ru/news/info-for-mass-media.xml).
