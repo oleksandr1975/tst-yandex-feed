@@ -2,7 +2,7 @@
 /*
 Plugin Name: Yandex.News Feed by Teplitsa
 Description: The plugin creates feed for Yandex.News service
-Version: 1.11.0
+Version: 1.12.5
 Author: Teplitsa
 Author URI: https://te-st.ru/
 Text Domain: yandexnews-feed-by-teplitsa
@@ -38,7 +38,7 @@ if(!defined('ABSPATH')) die; // Die if accessed directly
 
 // Plugin version:
 if( !defined('LAYF_VERSION') )
-    define('LAYF_VERSION', '1.11.0');
+    define('LAYF_VERSION', '1.12.14');
 	
 // Plugin DIR, with trailing slash:
 if( !defined('LAYF_PLUGIN_DIR') )
@@ -60,6 +60,11 @@ if( !defined('LAYF_DEFAULT_MAX_POST_AGE') )
 if( !defined('LAYF_YANDEX_CMS_PLUGIN_ID') )
     define('LAYF_YANDEX_CMS_PLUGIN_ID', '6987189DB81CB618F223396A679B6B05');
 
+if(get_locale() === 'ru_RU') {
+	load_textdomain('yandexnews-feed-by-teplitsa', dirname(realpath(__FILE__)).'/languages/yandexnews-feed-by-teplitsa-ru_RU.mo'); // Load the lang. pack included
+}
+load_plugin_textdomain('yandexnews-feed-by-teplitsa', false, basename(dirname(__FILE__)).'/languages/'); // Load the lang. pack by priority
+	
 function yandexnews_feed_by_teplitsa_load_plugin_textdomain() {
     load_plugin_textdomain('yandexnews-feed-by-teplitsa', false, '/'.basename(LAYF_PLUGIN_DIR).'/languages/');
 }
@@ -73,9 +78,10 @@ $layf = La_Yandex_Feed_Core::get_instance();
 register_activation_hook( __FILE__, array( 'La_Yandex_Feed_Core', 'on_activation' ));
 register_deactivation_hook(__FILE__, array( 'La_Yandex_Feed_Core', 'on_deactivation' ));
 
+require_once(plugin_dir_path(__FILE__).'inc/hooks.php');
 
 /** strings to be translated **/
 $strings = array(
-__('The plugin creates feed for Yandex.News service', 'yandexnews-feed-by-teplitsa'),
-__('Teplitsa', 'yandexnews-feed-by-teplitsa'),
+	__('The plugin creates feed for Yandex.News service', 'yandexnews-feed-by-teplitsa'),
+	__('Teplitsa', 'yandexnews-feed-by-teplitsa'),
 );

@@ -94,6 +94,16 @@ class La_Yandex_Feed_Admin {
             $this,
             'settngs_custom_turbo_url_callback'
         ), 'layf_settings', 'layf_base' );
+
+        add_settings_field ( 'layf_available_shortcodes', __ ( 'Available shortcodes', 'yandexnews-feed-by-teplitsa' ), array (
+            $this,
+            'settngs_available_shortcodes_callback' 
+        ), 'layf_settings', 'layf_base' );
+        
+        add_settings_field ( 'layf_api_sync_token', __ ( 'Yandex.Webmaster OAuth Token', 'yandexnews-feed-by-teplitsa' ), array (
+            $this,
+            'settngs_api_sync_token_callback' 
+        ), 'layf_settings', 'layf_base' );
         
         add_settings_field ( 'layf_post_types', __ ( 'Post types for feed', 'yandexnews-feed-by-teplitsa' ), array (
             $this,
@@ -160,11 +170,6 @@ class La_Yandex_Feed_Admin {
             'settings_analytics_type_callback'
         ), 'layf_settings', 'layf_base' );
         
-        add_settings_field ( 'layf_remove_pdalink', __ ( 'Remove pdalink tag from feed', 'yandexnews-feed-by-teplitsa' ), array (
-            $this,
-            'settings_remove_pdalink_callback' 
-        ), 'layf_settings', 'layf_base' );
-        
         add_settings_field ( 'layf_hide_author', __ ( 'Remove post author name from feed', 'yandexnews-feed-by-teplitsa' ), array (
             $this,
             'settings_hide_author_callback'
@@ -178,6 +183,11 @@ class La_Yandex_Feed_Admin {
         add_settings_field ( 'layf_remove_teaser_from_fulltext', __ ( 'Remove teaser from yandex:full-text tag', 'yandexnews-feed-by-teplitsa' ), array (
             $this,
             'settings_remove_teaser_from_fulltext_callback'
+        ), 'layf_settings', 'layf_base' );
+        
+        add_settings_field ( 'layf_allow_any_tags', __ ( 'Allow any tags in turbo-content', 'yandexnews-feed-by-teplitsa' ), array (
+            $this,
+            'settings_allow_any_tags_callback'
         ), 'layf_settings', 'layf_base' );
         
         add_settings_field ( 'layf_feed_items_limit', __ ( 'Feed items limit', 'yandexnews-feed-by-teplitsa' ), array (
@@ -208,12 +218,13 @@ class La_Yandex_Feed_Admin {
         register_setting ( 'layf_settings', 'layf_analytics_id' );
         register_setting ( 'layf_settings', 'layf_adnetwork_id_header' );
         register_setting ( 'layf_settings', 'layf_adnetwork_id_footer' );
-        register_setting ( 'layf_settings', 'layf_remove_pdalink' );
         register_setting ( 'layf_settings', 'layf_hide_author' );
         register_setting ( 'layf_settings', 'layf_feed_items_limit' );
         register_setting ( 'layf_settings', 'layf_feed_cache_ttl' );
         register_setting ( 'layf_settings', 'layf_remove_shortcodes' );
         register_setting ( 'layf_settings', 'layf_remove_teaser_from_fulltext' );
+		register_setting ( 'layf_settings', 'layf_allow_any_tags' );
+		register_setting ( 'layf_settings', 'layf_api_sync_token' );
     }
 		
 	function layf_settings_screen(){
@@ -281,7 +292,48 @@ class La_Yandex_Feed_Admin {
     '<a href="'.home_url('/index.php?yandex_feed=turbo&paged=3').'">'.home_url('/index.php?yandex_feed=turbo&paged=3').'</a>');?></p>
 <?php	
 	}
- 
+
+	function settngs_available_shortcodes_callback() {
+?>
+		<div class="metabox-holder tstyn-settings">
+			<?php do_meta_boxes('settings_page_layf_settings', 'side', null);?>
+		</div>
+<?php
+	}
+
+	public static function shortcode_examples_metabox_callback() {
+?>
+		<h3><?php _e('Button', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsButton formaction="tel:+7(800)123-45-67" data-background-color="#eee" data-color="white" data-turbo="false" data-primary="true" disabled]8 800 123-45-67[/TstYandexNewsButton]</code>
+
+		<h3><?php _e('Share', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsShare data-network="facebook, odnoklassniki, telegram, twitter, vkontakte"/]</code>
+
+		<h3><?php _e('Search', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsSearch palceholder="Что-нибудь найти" /]</code>
+
+		<h3><?php _e('Feedback', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsFeedback data-title="Обратная связь" data-stick="false" call="+7 012 345-67-89" callback="mail@example.com" company="ООО Ромашка" agreement="http://example.com" mail="mailto:mail@example.com" chat facebook="https://fb.com/example" google="https://plus.google.com/" odnoklassniki="https://ok.ru/example" telegram="https://t.me/example" twitter="https://twitter.com/yandex" vkontakte="https://vk.com/example" whatsapp="https://wa.me/70123456789" viber="viber://chat?number=+70123456789"/]</code>
+
+		<h3><?php _e('Ads', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsAds data-turbo-ad-id="mobile_ad" /]</code>
+
+		<h3><?php _e('User component', 'yandexnews-feed-by-teplitsa')?></h3>
+		<code>[TstYandexNewsComponent tag="MySpecialButton"]Text Inside Component[/TstYandexNewsComponent]</code>
+<?php
+	}
+
+	function settngs_api_sync_token_callback() {
+		
+		$value = get_option('layf_api_sync_token', '');
+		?>
+<label for="layf_api_sync_token"><input name="layf_api_sync_token"
+    id="layf_api_sync_token" type="text" class="regular-text code"
+    value="<?php echo $value;?>"> </label>
+<p class="description"><?php _e('You can get token in Yandex.Webmaster > Sources > Get token', 'yandexnews-feed-by-teplitsa');?></p>
+<?php
+	}
+	
 	function settngs_post_types_callback() {
 		
 		$value = get_option('layf_post_types', '');
@@ -417,14 +469,6 @@ class La_Yandex_Feed_Admin {
 		<?php
 	}
 	
-    function settings_remove_pdalink_callback() {
-	    $value = get_option('layf_remove_pdalink', '');
-	    ?>
-<input type="checkbox" name="layf_remove_pdalink" value="1"
-    <?php if($value):?> checked="checked" <?php endif;?> />
-<?php	
-	}
-	
 	function settings_hide_author_callback() {
 	    $value = get_option('layf_hide_author', '');
 	    ?>
@@ -457,6 +501,14 @@ class La_Yandex_Feed_Admin {
     <?php if($value):?> checked="checked" <?php endif;?> />
 <?php	
 	}
+
+	function settings_allow_any_tags_callback() {
+	    $value = get_option('layf_allow_any_tags', '');
+	    ?>
+<input type="checkbox" name="layf_allow_any_tags" value="1"
+    <?php if($value):?> checked="checked" <?php endif;?> />
+<?php	
+	}
 		
 	function settings_feed_items_limit_callback() {
 	    $value = get_option('layf_feed_items_limit', '');
@@ -483,10 +535,31 @@ class La_Yandex_Feed_Admin {
 	function enqueue_cssjs() {
 		
 		$screen = get_current_screen(); 
-		if('settings_page_layf_settings' != $screen->id)
-			return;
-      
-        wp_enqueue_style('layf-admin', LAYF_PLUGIN_BASE_URL.'css/admin.css', array(), LAYF_VERSION);
+		if('settings_page_layf_settings' === $screen->id) {
+			wp_enqueue_style('layf-admin', LAYF_PLUGIN_BASE_URL.'css/admin.css', array(), LAYF_VERSION);
+			wp_enqueue_script( 'common' );
+			wp_enqueue_script( 'wp-lists' );
+			wp_enqueue_script( 'postbox' );			
+
+			wp_enqueue_script(
+				'layf-admin-settings',
+				LAYF_PLUGIN_BASE_URL . 'js/admin-settings.js',
+				array(),
+				LAYF_VERSION,
+				true
+			);		
+	
+		}
+		else {
+			wp_enqueue_script(
+				'layf-admin',
+				LAYF_PLUGIN_BASE_URL . 'js/admin.js',
+				array(),
+				LAYF_VERSION,
+				true
+			);		
+		}
+
 	}
 	
 	
@@ -634,4 +707,17 @@ function layf_admin_notice_dismissed() {
         add_user_meta( $user_id, 'layf_admin_notice_dismissed', 'true', true );
     }
 }
+
+function tstyn_add_shortcode_examples_metabox() {
+	add_meta_box(
+		'tstyn-shortcode-examples',
+		__('Shortcode examples', 'yandexnews-feed-by-teplitsa'),
+		'La_Yandex_Feed_Admin::shortcode_examples_metabox_callback',
+		'settings_page_layf_settings',
+		'side',
+		'high'
+	);
+}
+
 add_action( 'admin_init', 'layf_admin_notice_dismissed' );
+add_action( 'admin_init', 'tstyn_add_shortcode_examples_metabox' );
